@@ -1,23 +1,19 @@
-import { Application, Container, Texture } from 'pixi.js';
-import { Circle } from './shapes/circle';
-import type { Shape } from './shapes/shape';
+import { Application } from 'pixi.js';
 import { Spawner } from './spawner';
 import { ShapeManager } from './shape-manager';
+import type { Config } from './config';
 
 export class ShapeApp {
     engine: Application;
-    // shapes: Shape[] = [];
-    // shapesToDelete: Shape[] = [];
-    // circlesContainer: Container;
-    gravity = 1;
     intervalSpawner: Spawner;
-    shapes: ShapeManager;
+    shapeManager: ShapeManager;
+    config: Config;
 
-    constructor() {
+    constructor(config: Config) {
+        this.config = config;
         this.engine = new Application();
-        this.intervalSpawner = new Spawner(1000, this.engine)
-        // this.circlesContainer = new Container();
-        this.shapes = new ShapeManager(this.engine);
+        this.intervalSpawner = new Spawner(this.config.spawnIntervalMS, this.engine)
+        this.shapeManager = new ShapeManager(this.engine);
     }
 
     async init() {
@@ -32,51 +28,31 @@ export class ShapeApp {
 
         this.engine.ticker.add(this.update, this);
 
-        this.shapes.init();
+        this.shapeManager.init();
 
-        // const circleTexture = Circle.generateTexture(this.engine.renderer);
-
-        // this.engine.stage.addChild(this.circlesContainer);
-        this.engine.stage.addChild(this.shapes.containers.circle);
+        // this.engine.stage.interactive = true;
+        // this.engine.stage.interactiveChildren = true;
 
         this.engine.stage.on('spawnShape', () => {
-            // this.onSpawnShape(circleTexture);
-            this.shapes.spawnCircle();
+            this.shapeManager.spawnRandomShape();
+        });
+
+        // this.engine.stage.on('pointerdown', (event) => {
+        //     console.log('POINTER DOWN')
+        //     // this.shapeManager.spawnRandomShape({})
+        // });
+
+        this.engine.canvas.addEventListener('pointerdown', (event) => {
+            const intersected = this.shapeManager.handleClick(event.clientX, event.clientY);
+
+            if (!intersected) {
+                this.shapeManager.spawnRandomShape(event.clientX, event.clientY);
+            }
         });
     }
 
-    // onSpawnShape(texture: Texture) {
-    //     const circle = new Circle({
-    //         texture: texture,
-    //         color: Math.random() * 0xffffff,
-    //         x: Math.random() * this.engine.renderer.width,
-    //         y: 0,
-    //         size: Math.random() + 0.5,
-    //     });
-    //     this.shapes.push(circle);
-    //     this.circlesContainer.addChild(circle.sprite);
-    // }
-
     update() {
-        // console.log('update');
-
-        // for (const shape of this.shapes) {
-        //     shape.moveDown(this.gravity);
-
-        //     if (shape.isOutOfBounds(this.engine.renderer.height)) {{
-        //         this.shapesToDelete.push(shape);
-        //     }}
-        // }
-
-        // for (let deletedShape of this.shapesToDelete) {
-        //     this.shapes.splice(this.shapes.indexOf(deletedShape), 1);
-        // }
-
-        // if (this.shapesToDelete.length) {
-        //     this.shapesToDelete = [];
-        // }
-
-        this.shapes.update(this.gravity);
+        this.shapeManager.update(this.config.gravity);
         this.intervalSpawner.update(this.engine.ticker.deltaMS);
     }
 }

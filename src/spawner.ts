@@ -15,7 +15,7 @@ export class Spawner {
 
         if (this.elapsed >= this.interval) {
             this.elapsed = 0;
-            this.engine.stage.emit('spawnShape', );
+            this.engine.stage.emit('spawnShape');
         }
     }
 }
