@@ -2,12 +2,14 @@ import { Application } from 'pixi.js';
 import { Spawner } from './spawner';
 import { ShapeManager } from './shape-manager';
 import type { Config } from './config';
+import { Stats } from 'pixi-stats';
 
 export class ShapeApp {
     engine: Application;
     intervalSpawner: Spawner;
     shapeManager: ShapeManager;
     config: Config;
+    stats!: Stats;
 
     constructor(config: Config) {
         this.config = config;
@@ -26,21 +28,17 @@ export class ShapeApp {
         const root = document.getElementById('app');
         root?.appendChild(this.engine.canvas);
 
+        this.stats = new Stats(this.engine.renderer);
+        
         this.engine.ticker.add(this.update, this);
 
         this.shapeManager.init();
 
-        // this.engine.stage.interactive = true;
-        // this.engine.stage.interactiveChildren = true;
-
         this.engine.stage.on('spawnShape', () => {
-            this.shapeManager.spawnRandomShape();
+            for (let i = 0; i < this.config.shapesPerSecond; i++) {
+                this.shapeManager.spawnRandomShape();
+            }
         });
-
-        // this.engine.stage.on('pointerdown', (event) => {
-        //     console.log('POINTER DOWN')
-        //     // this.shapeManager.spawnRandomShape({})
-        // });
 
         this.engine.canvas.addEventListener('pointerdown', (event) => {
             const intersected = this.shapeManager.handleClick(event.clientX, event.clientY);

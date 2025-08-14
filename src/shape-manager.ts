@@ -1,13 +1,14 @@
-import { Application } from 'pixi.js';
+import { Application, Container } from 'pixi.js';
 import { CircleFactory } from './factories/circles';
 import { SquareFactory } from './factories/squares';
+import { Shape, type ShapeKind } from './shapes/shape';
 import type { ShapeFactory } from './factories/shape-factory';
-import type { Shape, ShapeKind } from './shapes/shape';
 
 export class ShapeManager {
     engine: Application;
     shapes: Shape[] = [];
     shapesToDelete: Shape[] = [];
+    container = new Container();
     factories!: Record<ShapeKind, ShapeFactory>;
     
     constructor(engine: Application) {
@@ -16,8 +17,8 @@ export class ShapeManager {
     
     init() {
         this.factories = {
-            circle: new CircleFactory(this.engine),
-            square: new SquareFactory(this.engine),
+            circle: new CircleFactory(this.engine, this.container),
+            square: new SquareFactory(this.engine, this.container),
         }
     }
 
@@ -32,8 +33,9 @@ export class ShapeManager {
     handleClick(x: number, y: number): boolean {
         for (let i = this.shapes.length - 1; i >= 0; i--) {
             const shape = this.shapes[i];
+            
             if (shape.containsPoint(x, y)) {
-                this.shapesToDelete.push(shape);
+                this.removeShape(shape, i);
                 return true;
             }
         }
@@ -42,24 +44,20 @@ export class ShapeManager {
     }
 
     update(gravity: number) {
-        for (const shape of this.shapes) {
+        for (let i = 0; i < this.shapes.length; i++) {
+            const shape = this.shapes[i];
             shape.moveDown(gravity);
 
             if (shape.isOutOfBounds(this.engine.renderer.height)) {{
-                this.shapesToDelete.push(shape);
+                this.removeShape(shape, i);
             }}
         }
 
-        for (const deletedShape of this.shapesToDelete) {
-            deletedShape.remove();
-            const index = this.shapes.indexOf(deletedShape);
-            this.shapes.splice(index, 1);
-        }
+        // console.log('TOTAL SHAPES', this.totalShapes);
+    }
 
-        if (this.shapesToDelete.length) {
-            this.shapesToDelete = [];
-        }
-
-        // console.log(this.shapes.length);
+    removeShape(shape: Shape, index: number) {
+        this.shapes.splice(index, 1);
+        this.factories[shape.type].return(shape);
     }
 }

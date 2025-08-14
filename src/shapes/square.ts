@@ -1,23 +1,12 @@
-import { Sprite, Texture } from 'pixi.js';
-import type { Shape, ShapeOptions } from './shape';
+import type { PoolItem } from 'pixi.js';
+import { Shape, type ShapeKind, type ShapeOptions } from './shape';
 
-export class Square implements Shape {
-    texture: Texture;
-    sprite: Sprite;
-    width: number;
+export class Square extends Shape implements PoolItem {
+    width!: number;
+    type: ShapeKind = 'square';
 
-    constructor(options: ShapeOptions) {
-        this.texture = options.texture;
-
-        this.sprite = new Sprite(this.texture);
-        this.sprite.scale.set(options.size);
-        this.sprite.tint = options.color;
-
-        this.sprite.position.set(
-            Math.max(0, Math.round(options.x - this.sprite.width)),
-            options.y - this.sprite.height
-        );
-
+    init(options: ShapeOptions) {
+        super.init(options);
         this.width = this.sprite.width;
     }
 
@@ -29,15 +18,12 @@ export class Square implements Shape {
         return this.width * this.width;
     }
 
-    moveDown(stepY: number): void {
-        this.sprite.position.y += stepY;
-    }
-
     isOutOfBounds(maxY: number): boolean {
         return this.sprite.position.y > maxY;
     }
 
     remove() {
-        this.sprite.destroy();
+        // this.sprite.parent?.removeChild(this.sprite);
+        // this.sprite.destroy();
     }
 }
