@@ -3,16 +3,18 @@ import { CircleFactory } from './factories/circles';
 import { SquareFactory } from './factories/squares';
 import { Shape, type ShapeKind } from './shapes/shape';
 import type { ShapeFactory } from './factories/shape-factory';
+import type { UI } from './ui';
 
 export class ShapeManager {
     engine: Application;
     shapes: Shape[] = [];
-    shapesToDelete: Shape[] = [];
     container = new Container();
     factories!: Record<ShapeKind, ShapeFactory>;
+    ui: UI;
     
-    constructor(engine: Application) {
+    constructor(engine: Application, ui: UI) {
         this.engine = engine;
+        this.ui = ui;
     }
     
     init() {
@@ -28,12 +30,17 @@ export class ShapeManager {
         const type = allTypes[index];
         const shape = this.factories[type].spawn(x, y);
         this.shapes.push(shape);
+
+        this.ui.updateTotalShapes(this.shapes.length);
+        this.ui.updateTotalArea(
+            Math.floor(this.shapes.reduce((acc, s) => acc += s.area(), 0))
+        );
     }
 
     handleClick(x: number, y: number): boolean {
         for (let i = this.shapes.length - 1; i >= 0; i--) {
             const shape = this.shapes[i];
-            
+
             if (shape.containsPoint(x, y)) {
                 this.removeShape(shape, i);
                 return true;
@@ -59,5 +66,9 @@ export class ShapeManager {
     removeShape(shape: Shape, index: number) {
         this.shapes.splice(index, 1);
         this.factories[shape.type].return(shape);
+        this.ui.updateTotalShapes(this.shapes.length);
+        this.ui.updateTotalArea(
+            Math.floor(this.shapes.reduce((acc, s) => acc += s.area(), 0))
+        );
     }
 }
