@@ -1,32 +1,23 @@
 :root {
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
+    line-height: 1.25;
     font-weight: 400;
 
-    color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
     background-color: #f1f1f1;
-
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
     margin: 0;
     display: flex;
-    /* place-items: flex-start; */
     flex-direction: column;
-    /* min-width: 320px; */
-    /* min-height: 70vh; */
 }
 
 header {
     display: flex;
     place-items: center;
     justify-content: left;
-    min-height: 8vh;
+    min-height: 7vh;
 }
 
 p {
@@ -57,23 +48,19 @@ p {
 .value {
     font-weight: bold;
     font-size: 1.25rem;
-    line-height: 1.25;
 }
 
 #app {
     display: flex;
-    height: 75vh;
-    /* min-width: 100vmin;
-    min-height: 80vmax; */
+    height: 77vh;
 }
 
 footer {
     display: flex;
-    /* height: 16vh; */
 }
 
 footer .info {
-    padding: 5px 0;
+    padding-top: 5px;
 }
 
 .buttons {
@@ -83,7 +70,6 @@ footer .info {
 }
 
 .btn {
-    /* padding: 10px; */
     border: 2px solid black;
     line-height: 30px;
     color: black;
@@ -93,6 +79,10 @@ footer .info {
     width: 40px;
     height: 40px;
     cursor: pointer;
+}
+
+.btn:first-child {
+    border-right: none;
 }
 
 @media (orientation: portrait) {
