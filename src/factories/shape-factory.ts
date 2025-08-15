@@ -1,9 +1,3 @@
-// export interface ShapeFactory {
-//     init(): void;
-//     spawn(x?: number, y?: number): Shape;
-//     return(shape: Shape): void;
-// }
-
 import type { Application, Container, Pool, Texture } from 'pixi.js';
 import type { Shape } from '../shapes/shape';
 
@@ -23,24 +17,20 @@ export abstract class ShapeFactory {
 
     abstract generateTexture(): Texture;
 
-    spawn(x?: number, y?: number): Shape {
-        const posX = x ?? Math.random() * this.engine.renderer.width;
-        const posY = y ?? 0;
-
+    spawn(x: number, y: number): Shape {
         const shape = this.pool.get({
             texture: this.texture,
             color: Math.random() * 0xffffff,
-            x: posX,
-            y: posY,
+            x,
+            y,
             size: Math.random() + 0.5,
         });
 
-        this.container.addChild(shape.sprite);
+        this.container.addChild(shape);
         return shape;
     }
 
     return(shape: Shape) {
         this.pool.return(shape);
-        this.container.removeChild(shape.sprite);
     }
 } 

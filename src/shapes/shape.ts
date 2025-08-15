@@ -1,14 +1,4 @@
-import { type Texture, Sprite } from 'pixi.js';
-
-// export interface Shape {
-//     area(): number;
-//     moveDown(number): void;
-//     isOutOfBounds(number): boolean;
-//     remove(): void;
-//     containsPoint(x: number, y: number): boolean;
-//     sprite: Sprite;
-//     type: ShapeKind;
-// };
+import { type PoolItem, type Texture, Sprite } from 'pixi.js';
 
 export type ShapeOptions = {
     texture: Texture;
@@ -20,27 +10,34 @@ export type ShapeOptions = {
 
 export type ShapeKind = 'circle' | 'square';
 
-export abstract class Shape {
-    texture!: Texture;
-    sprite!: Sprite;
+export abstract class Shape extends Sprite implements PoolItem {
     abstract type: ShapeKind;
-
     abstract area(): number;
-    abstract containsPoint(x: number, y: number): boolean;
-    abstract isOutOfBounds(maxY: number): boolean;
+    abstract isPointInside(x: number, y: number): boolean;
+
+    constructor() {
+        super();
+    }
     
     init(options: ShapeOptions) {
         this.texture = options.texture;
-        this.sprite = new Sprite(this.texture);
-        this.sprite.scale.set(options.size);
-        this.sprite.tint = options.color;
-        this.sprite.position.set(
-            Math.max(0, Math.round(options.x - this.sprite.width)),
-            options.y - this.sprite.height
+        this.scale.set(options.size);
+        this.tint = options.color;
+        this.position.set(
+            Math.max(0, Math.round(options.x - this.width)),
+            options.y - this.height
         );    
     }
 
     moveDown(stepY: number): void {
-        this.sprite.position.y += stepY;   
+        this.position.y += stepY;   
+    }
+    
+    isOutOfBounds(maxY: number): boolean {
+        return this.position.y > maxY;
+    }
+
+    reset() {
+        this.parent?.removeChild(this);
     }
 }

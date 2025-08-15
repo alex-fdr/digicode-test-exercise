@@ -8,6 +8,7 @@ export class SquareFactory extends ShapeFactory {
     constructor(engine: Application, container: Container) {
         super(engine, container);
         this.pool = new Pool(Square, this.poolSize);
+        this.pool.prepopulate(this.poolSize * 0.5);
     }
 
     generateTexture(): Texture {
