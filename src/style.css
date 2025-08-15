@@ -79,6 +79,7 @@ footer .info {
     width: 40px;
     height: 40px;
     cursor: pointer;
+    user-select: none;
 }
 
 .btn:first-child {
@@ -86,5 +87,7 @@ footer .info {
 }
 
 @media (orientation: portrait) {
-    
+    .info {
+        min-width: 50vw;
+    }
 }

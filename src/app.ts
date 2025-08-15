@@ -19,7 +19,7 @@ export class ShapeApp {
         this.shapeManager = new ShapeManager(this.engine, this.ui);
     }
 
-    async init() {
+    async init(): Promise<void> {
         await this.engine.init({
             background: '#333333',
             resizeTo: document.getElementById('app')!,
@@ -33,35 +33,27 @@ export class ShapeApp {
 
         this.shapeManager.init();
 
-        let stopSpawn = false;
-
-        document.addEventListener('keypress', (event) => {
-            console.log(event.key)
-            if (event.key === '1') {
-                stopSpawn = !stopSpawn;
-            }
-        })
-
-        this.engine.stage.on('spawnShape', () => {
-            if (stopSpawn) {
-                return;
-            }
-
-            for (let i = 0; i < this.config.shapesPerSecond; i++) {
-                this.shapeManager.spawnRandomShape();
-            }
-        });
-
-        this.engine.canvas.addEventListener('pointerdown', (event) => {
-            const intersected = this.shapeManager.handleClick(event.offsetX, event.offsetY);
-
-            if (!intersected) {
-                this.shapeManager.spawnRandomShape(event.offsetX, event.offsetY);
-            }
-        });
+        this.engine.stage.on('spawnShape', this.onShapeSpawn, this);
+        this.engine.canvas.addEventListener('pointerdown', this.onCanvasInteraction.bind(this));
     }
 
-    update() {
+    private onShapeSpawn(): void {
+        for (let i = 0; i < this.config.shapesPerSecond; i++) {
+            const x = Math.random() * this.engine.renderer.width;
+            const y = 0;
+            this.shapeManager.spawnRandomShape(x, y);
+        }
+    }
+
+    private onCanvasInteraction(event: PointerEvent): void {
+        const intersected = this.shapeManager.handleClick(event.offsetX, event.offsetY);
+
+        if (!intersected) {
+            this.shapeManager.spawnRandomShape(event.offsetX, event.offsetY);
+        }
+    }
+
+    update(): void {
         this.shapeManager.update(this.config.gravity);
         this.intervalSpawner.update(this.engine.ticker.deltaMS);
     }

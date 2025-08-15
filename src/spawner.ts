@@ -10,7 +10,7 @@ export class Spawner {
         this.engine = engine;
     }
 
-    update(dt: number) {
+    update(dt: number): void {
         this.elapsed += dt;
 
         if (this.elapsed >= this.interval) {
