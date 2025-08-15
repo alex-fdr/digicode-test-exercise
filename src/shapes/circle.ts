@@ -1,4 +1,3 @@
-import type { PoolItem } from 'pixi.js';
 import { Shape, type ShapeKind, type ShapeOptions } from './shape';
 
 export class Circle extends Shape {
