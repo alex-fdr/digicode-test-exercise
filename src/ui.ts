@@ -19,38 +19,41 @@ export class UI {
 
         const gravityDecrease = document.getElementById('gravity-decrease')!;
         const gravityIncrease = document.getElementById('gravity-increase')!;
-
-        gravityDecrease.addEventListener('click', () => {
-            this.config.gravity = Math.max(1, this.config.gravity - 1);
-            this.updateGravityValue(this.config.gravity);
-        });
-
-        gravityIncrease.addEventListener('click', () => {
-            this.config.gravity = Math.min(100, this.config.gravity + 1);
-            this.updateGravityValue(this.config.gravity);
-        });
+        gravityDecrease.addEventListener('pointerdown', this.decreaseGravity.bind(this));
+        gravityIncrease.addEventListener('pointerdown', this.increaseGravity.bind(this));
 
         const shapesDecrease = document.getElementById('shapes-decrease')!;
         const shapesIncrease = document.getElementById('shapes-increase')!;
-
-        shapesDecrease.addEventListener('pointerdown', () => {
-            this.config.shapesPerSecond = Math.max(1, this.config.shapesPerSecond - 1);
-            this.updateShapesPerSecondValue(this.config.shapesPerSecond);
-        });
-
-        shapesIncrease.addEventListener('pointerdown', () => {
-            this.config.shapesPerSecond = Math.min(1000, this.config.shapesPerSecond + 1);
-            this.updateShapesPerSecondValue(this.config.shapesPerSecond);
-        });
+        shapesDecrease.addEventListener('pointerdown', this.decreaseShapesPerSecond.bind(this));
+        shapesIncrease.addEventListener('pointerdown', this.increaseShapesPerSecond.bind(this));
     }
 
+    decreaseShapesPerSecond() {
+        this.config.shapesPerSecond = Math.max(1, this.config.shapesPerSecond - 1);
+        this.updateShapesPerSecondValue(this.config.shapesPerSecond);
+    }
+
+    increaseShapesPerSecond() {
+        this.config.shapesPerSecond = Math.min(1000, this.config.shapesPerSecond + 1);
+        this.updateShapesPerSecondValue(this.config.shapesPerSecond);
+    }
+    
+    decreaseGravity() {
+        this.config.gravity = Math.max(1, this.config.gravity - 1);
+        this.updateGravityValue(this.config.gravity);
+    }
+
+    increaseGravity() {
+        this.config.gravity = Math.min(100, this.config.gravity + 1);
+        this.updateGravityValue(this.config.gravity);
+    }
 
     updateTotalShapes(value: number) {
         this.totalShapes.innerText = value.toString();
     }
 
     updateTotalArea(value: number) {
-        this.totalArea.innerText = value.toString() + 'px';
+        this.totalArea.innerText = Math.floor(value) + 'px';
     }
 
     updateShapesPerSecondValue(value: number) {
